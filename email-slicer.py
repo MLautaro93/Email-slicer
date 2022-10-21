@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 
 # Create the window
 root = tk.Tk()
@@ -23,33 +24,36 @@ entry = tk.StringVar()
 entry_box = tk.Entry(font = 'helvetica 10', width = 50, justify = 'center', textvariable = entry)
 entry_box.place(relx = .5, y = 225, anchor = tk.CENTER)
 
-
-
-# The esult box
+# The result box
+result = ''
 result_box = tk.Text(height = 5, width = 50, font = 'helvetica 10')
 result_box.place(relx = .5, y = 425, anchor = tk.CENTER)
 
 # The functions
-def result():
-    try:
-        email = entry_box.get()
-        email = email.strip()
+
+def slice(*args):
+    email = entry_box.get()
+    email = email.strip()
+    pattern = '[\w._%+-]+@[\w.-]+\.[A-Za-z]{2,4}' # Regular expression to match an email format.
+
+    if re.fullmatch(pattern, email):
         username = email[:email.index('@')]
         domain = email[email.index('@') + 1:]
-        result_box.delete(1.0, tk.END)
-        message = f'Email entered was: {email}\nYour username is {username}\nAnd your domain server is {domain}'
-        result_box.insert(tk.END, message)
-    except:
-        result_box.delete(1.0, tk.END)
-        result_box.insert(tk.END, 'Please, enter a valid email ID.')
+        result = f'Email entered was: {email}\nYour username is {username}\nAnd your domain server is {domain}'
+    else:
+        result = 'Please, enter a valid email ID.'
+
+    result_box.delete(1.0, tk.END)
+    result_box.insert(tk.END, result)
 
 def reset():
     entry_box.delete(0, 'end')
     result_box.delete(1.0, tk.END)
 
 # The buttons
-done_button = tk.Button(text = 'Done', font='helvetica 10 bold', command = result)
+done_button = tk.Button(text = 'Slice', font='helvetica 10 bold', command = slice)
 reset_button = tk.Button(text = 'Reset', font='helvetica 10 bold', command = reset)
+root.bind('<Return>', slice)
 
 done_button.place(x = 325, y = 275, anchor = tk.CENTER)
 reset_button.place(x = 440, y = 275, anchor = tk.CENTER)
